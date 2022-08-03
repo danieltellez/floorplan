@@ -1,6 +1,6 @@
 var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
 
-var svg = d3.select("svg"),
+var svg = d3.select("svg.d3"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
     g = svg.append("g").attr("transform", "translate(32," + (height / 2) + ")"),
@@ -21,6 +21,7 @@ var mapdata = {
         zones: [
             {
                 id: uuid(),
+                pattern: '#circles-1',
                 name: "ZONE - 0",
                 points: [
                     [
@@ -67,6 +68,7 @@ var mapdata = {
             },
             {
                 id: uuid(),
+                pattern: '#circles-1',
                 name: "ZONE - 1",
                 points: [
                     [
@@ -88,35 +90,7 @@ var mapdata = {
                 ]
             }
         ],
-        sensors: [{
-            id: uuid(),
-            name: "Sensor - 0",
-            url: "images/bluetooth_logo.png",
-            x: 50,
-            y: 50,
-            w: width,
-            h: height
-        }]
-    }, {
-        id: uuid(),
-        name: "Floor 2",
-        image: {
-            url: "images/sample_floorplan.png",
-            x: 0,
-            y: 0,
-            w: width,
-            h: height
-        },
-        zones: [],
-        sensors: [{
-            id: uuid(),
-            name: "Sensor - 1",
-            url: "images/bluetooth_logo.png",
-            x: 50,
-            y: 50,
-            w: width,
-            h: height
-        }]
+        sensors: []
     }]
 };
 
@@ -136,6 +110,7 @@ var drawZone = d3.select('#poly').on('click', function () {
     var zone = {
         id:uuid(),
         name: "ZONE - " + uuid(),
+        pattern: '#diagonal-stripe-1',  // TODO Aquí habría que meterle el parámetro para saber el tipo de patrón
         points: zonePolyPoints
     };
     mapdata.floors[0].zones.push(zone);

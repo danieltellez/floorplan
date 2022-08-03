@@ -137,26 +137,26 @@ d3.floorplan = function () {
 
     map.zonePolygons = function (svgCanvas, zones) {
 
-        // Context menu
-        var menu = [
-            {
-                title: 'Change zone name',
-                action: function (elm, d, i) {
-                    console.log('Change zone name');
-                    zone.name = prompt("Please enter new name name", "Zone name");
-                    d3.select("." + this.classList.item(1) + '-text').text(zone.name);
-                }
-            },
-            {
-                title: 'Delete zone',
-                action: function (elm, d, i) {
-                    console.log('You have deleted - ' + this.classList.item(1));
-                    d3.select("." + this.classList.item(1)).remove();
-                }
-            }
-        ];
-
         zones.forEach(function (zone) {
+            // Context menu
+            var menu = [
+                {
+                    title: 'Change zone name',
+                    action: function (elm, d, i) {
+                        console.log('Change zone name');
+                        zone.name = prompt("Please enter new name name", "Zone name");
+                        d3.select("." + this.classList.item(1) + '-text').text(zone.name);
+                    }
+                },
+                {
+                    title: 'Delete zone',
+                    action: function (elm, d, i) {
+                        console.log('You have deleted - ' + this.classList.item(1));
+                        d3.select("." + this.classList.item(1)).remove();
+                    }
+                }
+            ];
+
             var gPoly;
             var polyPoints = zone.points;
             drawPolygon(svgCanvas, zone);
@@ -182,6 +182,7 @@ d3.floorplan = function () {
                 //console.log(polyPoints);
 
                 var polyEl = gPoly.append("polygon")
+                    .style("fill", `url(${zone.pattern})`)
                     .attr("points", polyPoints);
 
                 for (var i = 0; i < polyPoints.length; i++) {
@@ -400,6 +401,7 @@ d3.floorplan = function () {
             //console.log(polyPoints);
 
             polyEl = gPoly.append("polygon")
+                .style("fill", `url(${zone.pattern})`)
                 .attr("points", polyPoints);
 
             for (var i = 0; i < polyPoints.length; i++) {
@@ -590,7 +592,7 @@ d3.floorplan = function () {
         }));
 
         // Add context menu
-        image.on('contextmenu', d3.contextMenu(menu));
+        gSensorContainer.on('contextmenu', d3.contextMenu(menu));
     };
 
     return map;
