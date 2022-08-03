@@ -1,5 +1,3 @@
-var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
-
 var svg = d3.select("svg.d3"),
     width = +svg.attr("width"),
     height = +svg.attr("height"),
@@ -94,49 +92,42 @@ var mapdata = {
     }]
 };
 
+map.setData(svg, mapdata);
 // Load Floor image layers
-map.imageLayers(svg, mapdata.floors);
+map.imageLayers();
 // Load default polygons.
-map.zonePolygons(svg, mapdata.floors[0].zones);
+map.zonePolygons();
 
 // Load and Draw sensors
-mapdata.floors[0].sensors.forEach(function(sensor){
-    new map.sensorImageLayer(svg, mapdata.floors[0], sensor);
-});
+map.loadSensors();
 
 // Draw Zone function
 var drawZone = d3.selectAll('.poly').on('click', function () {
     var zonePolyPoints = [];
     var zoneType = $( this ).data('type');
-    console.log(`Drawing: ${zoneType}`)
     var zone = {
         id:uuid(),
         name: "ZONE - " + uuid(),
         pattern: `#${zoneType}`,
         points: zonePolyPoints
     };
-    mapdata.floors[0].zones.push(zone);
-    new map.drawZonePolygon(svg, zone);
+    
+    new map.drawZonePolygon(zone);
 });
 
 // Draw Sensor Image function
 var drawSensor = d3.select('#sensor').on('click', function () {
-    var zonePolyPoints = [];
     var sensor = {
         id:  uuid(),
         name: "Sensor - " + uuid(),
         url: "images/bluetooth_logo.png",
-        x: 50,
-        y: 50,
+        x: width / 2,
+        y: height / 2,
         w: 32,
         h: 32
     };
-    mapdata.floors[0].sensors.push(sensor);
-    new map.sensorImageLayer(svg, mapdata.floors[0], sensor);
+    map.drawSensor(sensor);
 });
-
-// Show data
-$('#mapdata').html(library.json.prettyPrint(mapdata));
 
 // Helper to automatically refresh data
 var updateMapData = d3.select('#updateMapData').on('click', function () {
@@ -149,16 +140,6 @@ var updateMapData = d3.select('#updateMapData').on('click', function () {
     });
     $('#mapdata').html(library.json.prettyPrint(mapdata));
 });
-
-// Helper to splice json array
-function findAndRemove(array, property, value) {
-    array.forEach(function (result, index) {
-        if (result[property] === value) {
-            //Remove from array
-            array.splice(index, 1);
-        }
-    });
-}
 
 // Helper to add uuids
 function uuid() {
@@ -173,14 +154,3 @@ function uuid() {
     }
     return uuid;
 }
-
-
-// Uncomment for testing
-// Draw text
-// map.drawText(g, alphabet);
-// Grab a random sample of letters from the alphabet, in alphabetical order.
-// d3.interval(function() {
-//     map.drawText(g, d3.shuffle(alphabet)
-//         .slice(0, Math.floor(Math.random() * 26))
-//         .sort());
-// }, 1500);

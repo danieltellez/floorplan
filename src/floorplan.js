@@ -21,12 +21,17 @@ d3.floorplan = function () {
         toolsWidth = 95,
         xScale = d3.scaleLinear(),
         yScale = d3.scaleLinear(),
-        mapdata = {},
+        mapdata = null,
         svgCanvas = null,
         g = null;
 
     function map() {
         return this
+    }
+
+    map.setData = function (svg, data) {
+        svgCanvas = svg;
+        mapdata = data;
     }
 
     map.xScale = function (scale) {
@@ -78,10 +83,10 @@ d3.floorplan = function () {
         return map;
     };
 
-
-    map.imageLayers = function (svgCanvas, data) {
+    map.imageLayers = function () {
+        console.log(JSON.stringify(mapdata.floors))
         var images = svgCanvas.selectAll("g.images")
-            .data(data)
+            .data(mapdata.floors)
             .enter()
             .append("g")
             .attr("class", function (floor) {
@@ -135,7 +140,19 @@ d3.floorplan = function () {
         text.exit().remove();
     };
 
-    map.zonePolygons = function (svgCanvas, zones) {
+    map.loadSensors = function() {
+        mapdata.floors[0].sensors.forEach( function(sensor) {
+            new map.sensorImageLayer(svgCanvas, mapdata.floors[0], sensor)
+        })
+    }
+
+    map.drawSensor = function(sensor) {
+        mapdata.floors[0].sensors.push(sensor);
+        new map.sensorImageLayer(svgCanvas, mapdata.floors[0], sensor)
+    }
+
+    map.zonePolygons = function () {
+        let zones = mapdata.floors[0].zones;  // TODO Why get floor zero ?
 
         zones.forEach(function (zone) {
             // Context menu
@@ -284,8 +301,8 @@ d3.floorplan = function () {
         });
     };
 
-    map.drawZonePolygon = function (svgCanvas, zone) {
-
+    map.drawZonePolygon = function (zone) {
+        mapdata.floors[0].zones.push(zone);
         // Context menu
         var menu = [
             {
