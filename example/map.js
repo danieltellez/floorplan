@@ -105,12 +105,14 @@ mapdata.floors[0].sensors.forEach(function(sensor){
 });
 
 // Draw Zone function
-var drawZone = d3.select('#poly').on('click', function () {
+var drawZone = d3.selectAll('.poly').on('click', function () {
     var zonePolyPoints = [];
+    var zoneType = $( this ).data('type');
+    console.log(`Drawing: ${zoneType}`)
     var zone = {
         id:uuid(),
         name: "ZONE - " + uuid(),
-        pattern: '#diagonal-stripe-1',  // TODO Aquí habría que meterle el parámetro para saber el tipo de patrón
+        pattern: `#${zoneType}`,
         points: zonePolyPoints
     };
     mapdata.floors[0].zones.push(zone);
