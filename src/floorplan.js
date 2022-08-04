@@ -580,14 +580,60 @@ d3.floorplan = function () {
         // Create new elements as needed.
         var gSensorContainer = svgCanvas.append("g").classed("sensor-" + sensor.id, true);
 
+        var rotationController = gSensorContainer.append('g');
+
         // ENTER
         // Create new elements as needed.
-        var image = gSensorContainer.append("image")
+        var image = rotationController.append("image")
             .attr("xlink:href", sensor.url)
             .attr("x", sensor.x)
             .attr("y", sensor.y)
             .attr("width", sensor.w)
             .attr("height", sensor.h);
+
+        var rotationIcon = rotationController.append('g')
+            .attr("class", "sensor-tool")
+            .attr("transform", `translate(${sensor.x - 10}, ${sensor.y - 10})`)
+            .call(
+                d3.drag()
+                    .on("drag", function() {
+                        var x = d3.event.x,
+                            y = d3.event.y,
+                            toolCenterX = this.getBBox().x + sensor.x,
+                            toolCenterY = this.getBBox().y + sensor.y,
+                            rotationCenterX = sensor.x + (sensor.w / 2),
+                            rotationCenterY = sensor.y + (sensor.h / 2),
+                            vector2 = {
+                                x: rotationCenterX - x,
+                                y: rotationCenterY - y
+                            },
+                            vector1 = {
+                                x: rotationCenterX - toolCenterX,
+                                y: rotationCenterY - toolCenterY
+                            },
+                            angle;
+                        
+                        angle = (Math.atan2(vector2.y, vector2.x) - Math.atan2(vector1.y, vector1.x)) * 180 / Math.PI;
+                        console.log(x, y, angle)
+                        // if (x < 0) {
+                        //     angle = 270 - (Math.atan(y / -x) * 180 / Math.PI);
+                        // } else {
+                        //     angle = 90 + (Math.atan(y / x) * 100 / Math.PI);
+                        // }
+    
+                        rotationController.attr("transform", `rotate(${angle}, ${rotationCenterX}, ${rotationCenterY})`);
+                    })
+                    .container(function() { return this.parentNode.parentNode })
+            )
+
+        rotationIcon
+            .append("path")
+            .attr("d", "M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z")
+            .attr("fill-rule", "evenodd")
+        
+        rotationIcon
+            .append("path")
+            .attr("d", "M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z")
 
         // Set translate variable defaults;
         gSensorContainer.datum({
